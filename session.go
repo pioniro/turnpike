@@ -13,7 +13,7 @@ type Session struct {
 	kill chan URI
 }
 
-func (s Session) String() string {
+func (s *Session) String() string {
 	return fmt.Sprintf("%d", s.Id)
 }
 
