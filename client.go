@@ -206,6 +206,14 @@ func (c *Client) Close() error {
 //
 // This function blocks and is most commonly run in a goroutine.
 func (c *Client) Receive() {
+	defer func() {
+
+		log.Println("client closed")
+
+		if c.ReceiveDone != nil {
+			c.ReceiveDone <- true
+		}
+	}()
 	for msg := range c.Peer.Receive() {
 
 		switch msg := msg.(type) {
@@ -235,16 +243,11 @@ func (c *Client) Receive() {
 
 		case *Goodbye:
 			log.Println("client received Goodbye message")
-			break
+			return
 
 		default:
 			log.Println("unhandled message:", msg.MessageType(), msg)
 		}
-	}
-	log.Println("client closed")
-
-	if c.ReceiveDone != nil {
-		c.ReceiveDone <- true
 	}
 }
 
